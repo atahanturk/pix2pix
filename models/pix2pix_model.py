@@ -2,7 +2,23 @@ import torch
 from .base_model import BaseModel
 from . import networks
 from .PerceptualLoss import VGGPerceptualLoss
+import torch.nn.functional as F
 
+from torchvision.models import vgg16
+class VGGPerceptualLoss(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        model = vgg16(pretrained=True, progress=False)
+        self.feature_extractor = torch.nn.Sequential(*list(model.features)[:31]).eval() # till 4_3 layer
+        for param in self.feature_extractor.parameters():
+            param.requires_grad = False
+
+    def forward(self, deconv_out, target):
+        deconv_out_features = self.feature_extractor(deconv_out)
+        target_features = self.feature_extractor(target)
+        return F.l1_loss(deconv_out_features, target_features)
+
+    
 class Pix2PixModel(BaseModel):
     """ This class implements the pix2pix model, for learning a mapping from input images to output images given paired data.
 
@@ -33,6 +49,7 @@ class Pix2PixModel(BaseModel):
         if is_train:
             parser.set_defaults(pool_size=0, gan_mode='vanilla')
             parser.add_argument('--lambda_L1', type=float, default=100.0, help='weight for L1 loss')
+            parser.add_argument('--lambda_VGG', type=float, default=10.0, help='weight for VGG loss')
 
         return parser
 
