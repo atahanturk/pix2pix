@@ -7,6 +7,6 @@ This code can be used like this in Colab or in a Linux machine:
 
 ##### !git clone https://github.com/atahanturk/pix2pix
 ##### import os
-#####os.chdir('pix2pix/')
-#####!pip install -r requirements.txt
-#####!python train.py --dataroot ./datasets/pix2pix_images --name rgb2thermal_pretrained --model pix2pix --direction AtoB --display_id -1 --continue_train
+##### os.chdir('pix2pix/')
+##### !pip install -r requirements.txt
+##### !python train.py --dataroot ./datasets/pix2pix_images --name rgb2thermal_pretrained --model pix2pix --direction AtoB --display_id -1 --continue_train
